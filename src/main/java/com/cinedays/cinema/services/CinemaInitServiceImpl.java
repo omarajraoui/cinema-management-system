@@ -99,12 +99,14 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
             Seance seance = new Seance();
             try {
                 seance.setHeureDebut(dateFormat.parse(seanceHeure));
+                seanceRepository.save(seance);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
 
     });
     }
+
 
 
 
@@ -122,19 +124,17 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
 
     @Override
     public void initFilms() {
-        double [] durees = new double[] { 1,1.5,2,2.5,3 };
+        double[] durees = new double[] {1,1.5,2,2.5,3};
         List<Categorie> categories = categorieRepository.findAll();
-        Stream.of("hunting hill House" , "It 2" ,"Batman","Spiderman").forEach(movie -> {
-            Film film = new Film();
-            film.setTitre(movie);
-            //pick one from the list
-            film.setDuree(durees[new Random().nextInt(durees.length)]);
-            film.setPhoto(movie.replaceAll(" ",""));
-            film.setCategorie(categories.get(new Random().nextInt(categories.size())));
-            filmRepository.save(film);
-
-
-        });
+        Stream.of( "The departed" , "Parasite" ,"Seul Sur Mars","Spiderman")
+                .forEach(titreFilm->{
+                    Film film = new Film();
+                    film.setTitre(titreFilm);
+                    film.setDuree(durees[new Random().nextInt(durees.length)]);
+                    film.setPhoto(titreFilm.replaceAll(" ", "")+".jpg");
+                    film.setCategorie(categories.get(new Random().nextInt(categories.size())));
+                    filmRepository.save(film);
+                });
     }
 
 
@@ -167,20 +167,19 @@ public class CinemaInitServiceImpl implements ICinemaInitService{
 
     @Override
     public void initTickets() {
-        projectionRepository.findAll().forEach(projection -> {
-            projection.getSalle().getPlaces().forEach(place -> {
+        projectionRepository.findAll().forEach(projection->{
+            projection.getSalle().getPlaces().forEach(place->{
                 Ticket ticket = new Ticket();
                 ticket.setPlace(place);
                 ticket.setPrix(projection.getPrix());
                 ticket.setProjectionFilm(projection);
-                ticket.setReservee(false);
+                ticket.setReservee(true);
                 ticketRepository.save(ticket);
-
-
             });
-
         });
+
+    }
 
 
     }
-}
+
